@@ -7,6 +7,7 @@ const musica = document.getElementById("musica");
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// Ajuste responsive
 function ajustarCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -14,8 +15,18 @@ function ajustarCanvas() {
 ajustarCanvas();
 window.addEventListener("resize", ajustarCanvas);
 
+// Scroll habilitado en inicio y final, bloqueado solo en juego
+function activarScroll() {
+  document.body.style.overflow = "auto";
+}
+function bloquearScroll() {
+  document.body.style.overflow = "hidden";
+}
+
+// Variables del juego
 let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 6;
 
+// Cargar imágenes
 const imgGnomo = new Image(); imgGnomo.src = "assets/gnomo.png";
 const imgVaso = new Image(); imgVaso.src = "assets/vaso.png";
 const malos = ["assets/malo1.png", "assets/malo2.png", "assets/malo3.png"].map(src => {
@@ -25,15 +36,19 @@ const malos = ["assets/malo1.png", "assets/malo2.png", "assets/malo3.png"].map(s
 });
 
 btnJugar.onclick = () => {
-  document.body.style.overflow = "hidden"; // bloquea scroll
+  bloquearScroll(); // bloquea scroll durante el juego
   inicio.classList.add("oculto");
   juego.classList.remove("oculto");
   musica.play();
   iniciarJuego();
 };
 
-btnReiniciar.onclick = () => location.reload();
+btnReiniciar.onclick = () => {
+  activarScroll(); // reactiva scroll al reiniciar
+  location.reload();
+};
 
+// Lógica del juego
 function iniciarJuego() {
   gnomo = { x: canvas.width / 2 - 50, y: canvas.height - 180, w: 100, h: 150 };
   objetos = [];
@@ -73,10 +88,6 @@ function generarObjetos() {
         velocidadX: Math.random() > 0.5 ? (Math.random() * 3 - 1.5) : 0
       });
     }
-
-    if (puntaje > 50) velocidad = 8;
-    if (puntaje > 100) velocidad = 11;
-    if (puntaje > 150) velocidad = 14;
   }, 400);
 }
 
@@ -93,13 +104,8 @@ function actualizar() {
     ctx.drawImage(obj.img, obj.x, obj.y, obj.w, obj.h);
 
     if (colision(gnomo, obj)) {
-      if (obj.tipo === "bueno") {
-        puntaje += 10;
-        velocidad += 0.3;
-      } else {
-        puntaje -= 10;
-        velocidad += 0.5;
-      }
+      if (obj.tipo === "bueno") puntaje += 10;
+      else puntaje -= 10;
       objetos.splice(i, 1);
     }
   });
@@ -115,7 +121,7 @@ function colision(a, b) {
 }
 
 function finalizarJuego() {
-  document.body.style.overflow = "auto"; // permite scroll
+  activarScroll(); // permite scroll de nuevo
   juegoActivo = false;
   juego.classList.add("oculto");
   final.classList.remove("oculto");
@@ -130,9 +136,11 @@ function finalizarJuego() {
 
 /* Controles */
 window.addEventListener("touchmove", e => {
+  if (!juegoActivo) return;
   const touch = e.touches[0];
   gnomo.x += (touch.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
 });
 window.addEventListener("mousemove", e => {
+  if (!juegoActivo) return;
   gnomo.x += (e.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
 });
