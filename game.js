@@ -18,11 +18,14 @@ let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocida
 
 const imgGnomo = new Image(); imgGnomo.src = "assets/gnomo.png";
 const imgVaso = new Image(); imgVaso.src = "assets/vaso.png";
-const imgMalo = new Image(); imgMalo.src = "assets/malo1.png";
-const imgMalo2 = new Image(); imgMalo.src = "assets/malo2.png";
-const imgMalo3 = new Image(); imgMalo.src = "assets/malo3.png";
+const malos = ["assets/malo1.png", "assets/malo2.png", "assets/malo3.png"].map(src => {
+  const img = new Image();
+  img.src = src;
+  return img;
+});
 
 btnJugar.onclick = () => {
+  document.body.style.overflow = "hidden"; // bloquea scroll
   inicio.classList.add("oculto");
   juego.classList.remove("oculto");
   musica.play();
@@ -32,7 +35,7 @@ btnJugar.onclick = () => {
 btnReiniciar.onclick = () => location.reload();
 
 function iniciarJuego() {
-  gnomo = { x: canvas.width / 2 - 50, y: canvas.height - 180, w: 100, h: 150, velocidad: 25 };
+  gnomo = { x: canvas.width / 2 - 50, y: canvas.height - 180, w: 100, h: 150 };
   objetos = [];
   puntaje = 0;
   tiempo = 20;
@@ -55,13 +58,10 @@ function iniciarJuego() {
 function generarObjetos() {
   setInterval(() => {
     if (!juegoActivo) return;
-
-    // genera de 2 a 3 objetos simultáneos
     const cantidad = 2 + Math.floor(Math.random() * 2);
 
     for (let i = 0; i < cantidad; i++) {
       const bueno = Math.random() > 0.5;
-      const malos = [imgMalo, imgMalo2, imgMalo3];
       objetos.push({
         x: Math.random() * (canvas.width - 60),
         y: -80,
@@ -70,16 +70,14 @@ function generarObjetos() {
         tipo: bueno ? "bueno" : "malo",
         img: bueno ? imgVaso : malos[Math.floor(Math.random() * malos.length)],
         velocidadY: velocidad + Math.random() * 5,
-        velocidadX: Math.random() > 0.5 ? (Math.random() * 3 - 1.5) : 0 // movimiento horizontal leve
+        velocidadX: Math.random() > 0.5 ? (Math.random() * 3 - 1.5) : 0
       });
     }
 
-    // aumenta la dificultad progresivamente
     if (puntaje > 50) velocidad = 8;
-    if (puntaje > 100) velocidad = 10;
-    if (puntaje > 150) velocidad = 12;
-    if (puntaje > 200) velocidad = 15;
-  }, 400); // menos tiempo entre apariciones
+    if (puntaje > 100) velocidad = 11;
+    if (puntaje > 150) velocidad = 14;
+  }, 400);
 }
 
 function actualizar() {
@@ -90,17 +88,17 @@ function actualizar() {
   objetos.forEach((obj, i) => {
     obj.y += obj.velocidadY;
     obj.x += obj.velocidadX;
-    if (obj.x < 0 || obj.x + obj.w > canvas.width) obj.velocidadX *= -1; // rebote lateral
+    if (obj.x < 0 || obj.x + obj.w > canvas.width) obj.velocidadX *= -1;
 
     ctx.drawImage(obj.img, obj.x, obj.y, obj.w, obj.h);
 
     if (colision(gnomo, obj)) {
       if (obj.tipo === "bueno") {
         puntaje += 10;
-        velocidad += 0.3; // más velocidad cada vez que aciertas
+        velocidad += 0.3;
       } else {
-        puntaje -= 10; // penalización fuerte
-        velocidad += 0.5; // aún más difícil
+        puntaje -= 10;
+        velocidad += 0.5;
       }
       objetos.splice(i, 1);
     }
@@ -117,23 +115,24 @@ function colision(a, b) {
 }
 
 function finalizarJuego() {
+  document.body.style.overflow = "auto"; // permite scroll
   juegoActivo = false;
   juego.classList.add("oculto");
   final.classList.remove("oculto");
 
   let mensaje = "¡Sigue practicando!";
   if (puntaje >= 150) mensaje = "🔥 ¡Eres una leyenda Xtasis! 🔥";
-  else if (puntaje >= 100) mensaje = "¡Bebida premium para ti 🍸!";
-  else if (puntaje >= 50) mensaje = "¡Buen intento, prueba de nuevo! 🍹";
+  else if (puntaje >= 100) mensaje = "¡2x1 en Xtasis Ice! 🍸";
+  else if (puntaje >= 50) mensaje = "¡10% de descuento 🍹!";
 
   document.getElementById("mensaje-final").innerText = mensaje;
 }
 
-/* --- Controles --- */
-window.addEventListener("mousemove", e => {
-  gnomo.x += (e.clientX - (gnomo.x + gnomo.w / 2)) * 0.15; // movimiento más lento (menos control)
-});
+/* Controles */
 window.addEventListener("touchmove", e => {
   const touch = e.touches[0];
   gnomo.x += (touch.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
+});
+window.addEventListener("mousemove", e => {
+  gnomo.x += (e.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
 });
