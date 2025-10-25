@@ -14,10 +14,10 @@ function ajustarCanvas() {
 ajustarCanvas();
 window.addEventListener("resize", ajustarCanvas);
 
-// Scroll en móviles activado
+// ✅ Scroll en móviles activado
 document.body.style.overflowY = "auto";
 
-let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 8;
+let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 6;
 
 const imgGnomo = new Image(); imgGnomo.src = "assets/gnomo.png";
 const imgVaso = new Image(); imgVaso.src = "assets/vaso.png";
@@ -39,7 +39,7 @@ function iniciarJuego() {
   objetos = [];
   puntaje = 0;
   tiempo = 20;
-  velocidad = 8;
+  velocidad = 6;
   juegoActivo = true;
 
   generarObjetos();
@@ -59,10 +59,12 @@ function generarObjetos() {
   setInterval(() => {
     if (!juegoActivo) return;
 
-    const cantidad = 3 + Math.floor(Math.random() * 3);
+    // Genera más objetos (4 a 6 simultáneos)
+    const cantidad = 4 + Math.floor(Math.random() * 3);
 
     for (let i = 0; i < cantidad; i++) {
-      const bueno = Math.random() > 0.4;
+      // 70% malos, 30% buenos
+      const bueno = Math.random() > 0.7;
       const malos = [imgMalo, imgMalo2, imgMalo3];
       objetos.push({
         x: Math.random() * (canvas.width - 60),
@@ -71,17 +73,17 @@ function generarObjetos() {
         h: 60,
         tipo: bueno ? "bueno" : "malo",
         img: bueno ? imgVaso : malos[Math.floor(Math.random() * malos.length)],
-        velocidadY: velocidad + Math.random() * 8,
-        velocidadX: Math.random() > 0.5 ? (Math.random() * 5 - 2.5) : 0
+        velocidadY: velocidad + Math.random() * 4,
+        velocidadX: Math.random() > 0.5 ? (Math.random() * 3 - 1.5) : 0
       });
     }
 
-    // Dificultad mucho más alta
-    if (puntaje > 50) velocidad = 10;
-    if (puntaje > 100) velocidad = 13;
-    if (puntaje > 150) velocidad = 16;
-    if (puntaje > 200) velocidad = 20;
-  }, 300);
+    // 🔥 Dificultad equilibrada pero progresiva
+    if (puntaje > 50) velocidad = 7;
+    if (puntaje > 100) velocidad = 8;
+    if (puntaje > 150) velocidad = 9;
+    if (puntaje > 200) velocidad = 10;
+  }, 400); // cada 0.4s caen objetos
 }
 
 function actualizar() {
@@ -99,10 +101,10 @@ function actualizar() {
     if (colision(gnomo, obj)) {
       if (obj.tipo === "bueno") {
         puntaje += 10;
-        velocidad += 0.5;
+        velocidad += 0.2;
       } else {
-        puntaje -= 15;
-        velocidad += 0.7;
+        puntaje -= 15; // penaliza más
+        velocidad += 0.3;
       }
       objetos.splice(i, 1);
     }
@@ -124,18 +126,18 @@ function finalizarJuego() {
   final.classList.remove("oculto");
 
   let mensaje = "¡Sigue practicando!";
-  if (puntaje >= 150) mensaje = "🔥 ¡Granizado GRATIS! 🔥";
-  else if (puntaje >= 100) mensaje = "¡2x1 en Xtasis Ice 🍸!";
-  else if (puntaje >= 50) mensaje = "¡10% de descuento! 🍹";
+  if (puntaje >= 150) mensaje = "🔥 ¡Eres una leyenda Xtasis! 🔥";
+  else if (puntaje >= 100) mensaje = "¡Bebida premium para ti 🍸!";
+  else if (puntaje >= 50) mensaje = "¡Buen intento, prueba de nuevo! 🍹";
 
   document.getElementById("mensaje-final").innerText = mensaje;
 }
 
 /* --- Controles --- */
 window.addEventListener("mousemove", e => {
-  gnomo.x += (e.clientX - (gnomo.x + gnomo.w / 2)) * 0.2;
+  gnomo.x += (e.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
 });
 window.addEventListener("touchmove", e => {
   const touch = e.touches[0];
-  gnomo.x += (touch.clientX - (gnomo.x + gnomo.w / 2)) * 0.2;
+  gnomo.x += (touch.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
 });
