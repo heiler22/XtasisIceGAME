@@ -1,57 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Xtasis Ice Cocktails 🍹</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xtasis Ice Cocktails 🍸</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 </head>
-<body>
-
-  <!-- 🎬 Pantalla Inicio -->
-  <div id="pantalla-inicio" class="pantalla text-center">
-    <div class="container py-5">
-      <img src="assets/logo.png" alt="Xtasis Logo" class="img-fluid logo mb-4" data-aos="fade-down">
-      <h2 class="neon-text" data-aos="zoom-in">🍸 Vive la experiencia <span>Xtasis Ice Cocktails</span> 🍸</h2>
-      <p class="lead" data-aos="fade-up">
-        Atrapa los vasos, esquiva los obstáculos y gana premios sorpresas.  
-      </p>
-      <div class="premios mt-4" data-aos="fade-up" data-aos-delay="200">
-        <h4 class="fw-bold">🎁 Premios disponibles:</h4>
-        <ul class="list-unstyled">
-          <li>50 pts → <span class="text-info">10% de descuento</span></li>
-          <li>100 pts → <span class="text-success">2x1 en Xtasis Ice</span></li>
-          <li>150 pts → <span class="text-warning">¡Granizado GRATIS!</span></li>
-        </ul>
-      </div>
-      <button id="btn-jugar" class="btn btn-lg btn-neon mt-4" data-aos="zoom-in">JUGAR</button>
-    </div>
-  </div>
-
-  <!-- 🎮 Pantalla Juego -->
-  <div id="pantalla-juego" class="pantalla oculto">
-    <canvas id="gameCanvas"></canvas>
-    <div class="hud">
-      <span>Puntaje: <span id="puntaje">0</span></span>
-      <span>Tiempo: <span id="tiempo">20</span>s</span>
-    </div>
-  </div>
-
-  <!-- 🏁 Pantalla Final -->
-  <div id="pantalla-final" class="pantalla oculto text-center">
-    <div class="container py-5">
-      <h2 class="neon-text mb-3">Resultado</h2>
-      <p id="mensaje-final" class="lead"></p>
-      <button id="btn-reiniciar" class="btn btn-neon mt-3">Volver a jugar</button>
-    </div>
-  </div>
-
+<body class="text-center bg-dark text-light">
   <audio id="musica" src="assets/musica.mp3" loop></audio>
 
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script>AOS.init();</script>
+  <!-- Pantalla de inicio -->
+  <section id="pantalla-inicio" class="container vh-100 d-flex flex-column justify-content-center align-items-center py-5">
+    <img src="assets/logo.png" class="img-fluid mb-4" style="max-width: 300px;">
+    <h1 class="neon-text mb-3">Vive la experiencia Xtasis Ice Cocktails 🍸</h1>
+    <p class="lead">Atrapa los vasos, esquiva los obstáculos y gana premios sorpresa.<br>
+      <strong>¿Podrás alcanzar el nivel de leyenda? 💥</strong>
+    </p>
+
+    <div class="card bg-transparent border-light text-light my-3 p-3" style="max-width: 400px;">
+      <h5 class="mb-3 text-warning">🎁 Premios disponibles:</h5>
+      <ul class="list-unstyled mb-0">
+        <li>50 pts → <span class="text-info">10% de descuento</span></li>
+        <li>100 pts → <span class="text-success">2x1 en Xtasis Ice</span></li>
+        <li>150 pts → <span class="text-danger">¡Granizado GRATIS!</span></li>
+      </ul>
+    </div>
+
+    <button id="btn-jugar" class="btn btn-lg btn-neon mt-4">🎮 ¡Comenzar!</button>
+  </section>
+
+  <!-- Pantalla del juego -->
+  <section id="pantalla-juego" class="oculto">
+    <div class="position-absolute top-0 start-0 m-3 fs-5">⭐ Puntaje: <span id="puntaje">0</span></div>
+    <div class="position-absolute top-0 end-0 m-3 fs-5">⏱ Tiempo: <span id="tiempo">20</span>s</div>
+    <canvas id="gameCanvas"></canvas>
+  </section>
+
+  <!-- Pantalla final -->
+  <section id="pantalla-final" class="oculto container vh-100 d-flex flex-column justify-content-center align-items-center">
+    <h2 id="mensaje-final" class="neon-text mb-4"></h2>
+    <button id="btn-reiniciar" class="btn btn-lg btn-neon">🔄 Jugar otra vez</button>
+  </section>
+
   <script src="game.js"></script>
 </body>
 </html>

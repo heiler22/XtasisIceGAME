@@ -7,7 +7,6 @@ const musica = document.getElementById("musica");
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Ajuste responsive
 function ajustarCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -15,46 +14,32 @@ function ajustarCanvas() {
 ajustarCanvas();
 window.addEventListener("resize", ajustarCanvas);
 
-// Scroll habilitado en inicio y final, bloqueado solo en juego
-function activarScroll() {
-  document.body.style.overflow = "auto";
-}
-function bloquearScroll() {
-  document.body.style.overflow = "hidden";
-}
+// Scroll en móviles activado
+document.body.style.overflowY = "auto";
 
-// Variables del juego
-let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 6;
+let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 8;
 
-// Cargar imágenes
 const imgGnomo = new Image(); imgGnomo.src = "assets/gnomo.png";
 const imgVaso = new Image(); imgVaso.src = "assets/vaso.png";
-const malos = ["assets/malo1.png", "assets/malo2.png", "assets/malo3.png"].map(src => {
-  const img = new Image();
-  img.src = src;
-  return img;
-});
+const imgMalo = new Image(); imgMalo.src = "assets/malo1.png";
+const imgMalo2 = new Image(); imgMalo2.src = "assets/malo2.png";
+const imgMalo3 = new Image(); imgMalo3.src = "assets/malo3.png";
 
 btnJugar.onclick = () => {
-  bloquearScroll(); // bloquea scroll durante el juego
   inicio.classList.add("oculto");
   juego.classList.remove("oculto");
   musica.play();
   iniciarJuego();
 };
 
-btnReiniciar.onclick = () => {
-  activarScroll(); // reactiva scroll al reiniciar
-  location.reload();
-};
+btnReiniciar.onclick = () => location.reload();
 
-// Lógica del juego
 function iniciarJuego() {
-  gnomo = { x: canvas.width / 2 - 50, y: canvas.height - 180, w: 100, h: 150 };
+  gnomo = { x: canvas.width / 2 - 50, y: canvas.height - 180, w: 100, h: 150, velocidad: 25 };
   objetos = [];
   puntaje = 0;
   tiempo = 20;
-  velocidad = 6;
+  velocidad = 8;
   juegoActivo = true;
 
   generarObjetos();
@@ -73,10 +58,12 @@ function iniciarJuego() {
 function generarObjetos() {
   setInterval(() => {
     if (!juegoActivo) return;
-    const cantidad = 2 + Math.floor(Math.random() * 2);
+
+    const cantidad = 3 + Math.floor(Math.random() * 3);
 
     for (let i = 0; i < cantidad; i++) {
-      const bueno = Math.random() > 0.5;
+      const bueno = Math.random() > 0.4;
+      const malos = [imgMalo, imgMalo2, imgMalo3];
       objetos.push({
         x: Math.random() * (canvas.width - 60),
         y: -80,
@@ -84,11 +71,17 @@ function generarObjetos() {
         h: 60,
         tipo: bueno ? "bueno" : "malo",
         img: bueno ? imgVaso : malos[Math.floor(Math.random() * malos.length)],
-        velocidadY: velocidad + Math.random() * 5,
-        velocidadX: Math.random() > 0.5 ? (Math.random() * 3 - 1.5) : 0
+        velocidadY: velocidad + Math.random() * 8,
+        velocidadX: Math.random() > 0.5 ? (Math.random() * 5 - 2.5) : 0
       });
     }
-  }, 400);
+
+    // Dificultad mucho más alta
+    if (puntaje > 50) velocidad = 10;
+    if (puntaje > 100) velocidad = 13;
+    if (puntaje > 150) velocidad = 16;
+    if (puntaje > 200) velocidad = 20;
+  }, 300);
 }
 
 function actualizar() {
@@ -104,8 +97,13 @@ function actualizar() {
     ctx.drawImage(obj.img, obj.x, obj.y, obj.w, obj.h);
 
     if (colision(gnomo, obj)) {
-      if (obj.tipo === "bueno") puntaje += 10;
-      else puntaje -= 10;
+      if (obj.tipo === "bueno") {
+        puntaje += 10;
+        velocidad += 0.5;
+      } else {
+        puntaje -= 15;
+        velocidad += 0.7;
+      }
       objetos.splice(i, 1);
     }
   });
@@ -121,26 +119,23 @@ function colision(a, b) {
 }
 
 function finalizarJuego() {
-  activarScroll(); // permite scroll de nuevo
   juegoActivo = false;
   juego.classList.add("oculto");
   final.classList.remove("oculto");
 
   let mensaje = "¡Sigue practicando!";
   if (puntaje >= 150) mensaje = "🔥 ¡Eres una leyenda Xtasis! 🔥";
-  else if (puntaje >= 100) mensaje = "¡2x1 en Xtasis Ice! 🍸";
-  else if (puntaje >= 50) mensaje = "¡10% de descuento 🍹!";
+  else if (puntaje >= 100) mensaje = "¡Bebida premium para ti 🍸!";
+  else if (puntaje >= 50) mensaje = "¡Buen intento, prueba de nuevo! 🍹";
 
   document.getElementById("mensaje-final").innerText = mensaje;
 }
 
-/* Controles */
-window.addEventListener("touchmove", e => {
-  if (!juegoActivo) return;
-  const touch = e.touches[0];
-  gnomo.x += (touch.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
-});
+/* --- Controles --- */
 window.addEventListener("mousemove", e => {
-  if (!juegoActivo) return;
-  gnomo.x += (e.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
+  gnomo.x += (e.clientX - (gnomo.x + gnomo.w / 2)) * 0.2;
+});
+window.addEventListener("touchmove", e => {
+  const touch = e.touches[0];
+  gnomo.x += (touch.clientX - (gnomo.x + gnomo.w / 2)) * 0.2;
 });

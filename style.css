@@ -1,87 +1,40 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'Poppins', sans-serif;
-  background: radial-gradient(circle at bottom, #19002d 0%, #050012 100%);
-  color: white;
+body {
+  background: radial-gradient(circle at center, #2b0040, #0d001a);
   overflow-x: hidden;
-}
-
-.pantalla {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-#pantalla-inicio {
-  background: radial-gradient(circle at center, #0a0014 0%, #18002d 100%);
   overflow-y: auto;
-  padding-bottom: 4rem;
+  font-family: 'Poppins', sans-serif;
 }
 
-#pantalla-juego {
-  position: relative;
-  background: linear-gradient(180deg, #1a003d, #000);
-  overflow: hidden;
-  touch-action: none;
-}
-
-#pantalla-final {
-  background: linear-gradient(180deg, #0a001a, #20003a);
-}
-
-.logo {
-  max-width: 280px;
+.oculto {
+  display: none !important;
 }
 
 .neon-text {
-  color: #fff;
-  text-shadow: 0 0 8px #ff00ff, 0 0 15px #00ffff;
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff33ff, 0 0 40px #ff66ff;
 }
 
 .btn-neon {
-  background: linear-gradient(90deg, #ff00ff, #00ffff);
-  color: #fff;
+  background-color: #ff00ff;
+  color: white;
   border: none;
+  padding: 0.8em 2em;
+  font-weight: bold;
   border-radius: 30px;
-  padding: 12px 28px;
+  box-shadow: 0 0 20px #ff00ff;
   transition: 0.3s;
 }
 .btn-neon:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 20px #ff00ff;
+  background-color: #ff33ff;
+  box-shadow: 0 0 40px #ff33ff, 0 0 80px #ff00ff;
 }
 
-.hud {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  width: calc(100% - 30px);
-  font-size: 1.2rem;
-}
-
-canvas {
-  display: block;
-  width: 100%;
-  height: 100vh;
-}
-
-/* Responsive */
+/* Responsividad */
 @media (max-width: 768px) {
-  .logo {
-    max-width: 200px;
+  h1 {
+    font-size: 1.5rem;
   }
-  .neon-text {
-    font-size: 1.3rem;
-  }
-  .hud {
+  .btn-neon {
     font-size: 1rem;
   }
 }
