@@ -17,7 +17,7 @@ window.addEventListener("resize", ajustarCanvas);
 // ✅ Scroll en móviles activado
 document.body.style.overflowY = "auto";
 
-let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 6;
+let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 4;
 
 const imgGnomo = new Image(); imgGnomo.src = "assets/gnomo.png";
 const imgVaso = new Image(); imgVaso.src = "assets/vaso.png";
@@ -39,7 +39,7 @@ function iniciarJuego() {
   objetos = [];
   puntaje = 0;
   tiempo = 20;
-  velocidad = 6;
+  velocidad = 4; // 🔹 velocidad inicial más baja
   juegoActivo = true;
 
   generarObjetos();
@@ -59,12 +59,12 @@ function generarObjetos() {
   setInterval(() => {
     if (!juegoActivo) return;
 
-    // Genera más objetos (4 a 6 simultáneos)
-    const cantidad = 4 + Math.floor(Math.random() * 3);
+    // 🔹 Solo 2 a 3 objetos simultáneos
+    const cantidad = 2 + Math.floor(Math.random() * 2);
 
     for (let i = 0; i < cantidad; i++) {
-      // 70% malos, 30% buenos
-      const bueno = Math.random() > 0.7;
+      // 🔹 60% malos / 40% buenos
+      const bueno = Math.random() > 0.6;
       const malos = [imgMalo, imgMalo2, imgMalo3];
       objetos.push({
         x: Math.random() * (canvas.width - 60),
@@ -73,17 +73,17 @@ function generarObjetos() {
         h: 60,
         tipo: bueno ? "bueno" : "malo",
         img: bueno ? imgVaso : malos[Math.floor(Math.random() * malos.length)],
-        velocidadY: velocidad + Math.random() * 4,
-        velocidadX: Math.random() > 0.5 ? (Math.random() * 3 - 1.5) : 0
+        velocidadY: velocidad + Math.random() * 2,
+        velocidadX: Math.random() > 0.5 ? (Math.random() * 2 - 1) : 0
       });
     }
 
-    // 🔥 Dificultad equilibrada pero progresiva
-    if (puntaje > 50) velocidad = 7;
-    if (puntaje > 100) velocidad = 8;
-    if (puntaje > 150) velocidad = 9;
-    if (puntaje > 200) velocidad = 10;
-  }, 400); // cada 0.4s caen objetos
+    // 🔹 Dificultad progresiva, pero más controlada
+    if (puntaje > 50) velocidad = 5;
+    if (puntaje > 100) velocidad = 6;
+    if (puntaje > 150) velocidad = 7;
+    if (puntaje > 200) velocidad = 8;
+  }, 600); // 🔹 objetos caen con más tiempo entre sí
 }
 
 function actualizar() {
@@ -101,10 +101,10 @@ function actualizar() {
     if (colision(gnomo, obj)) {
       if (obj.tipo === "bueno") {
         puntaje += 10;
-        velocidad += 0.2;
+        velocidad += 0.1;
       } else {
-        puntaje -= 15; // penaliza más
-        velocidad += 0.3;
+        puntaje -= 10;
+        velocidad += 0.2;
       }
       objetos.splice(i, 1);
     }
