@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xtasis Ice Game 🍹</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Pantalla 1: Inicio -->
+  <div id="pantalla-inicio" class="pantalla inicio text-center text-light">
+    <div class="container">
+      <img src="assets/logo.png" id="logo" class="img-fluid mb-4" alt="Xtasis Ice Logo" />
+      <h2 class="fw-bold neon-text">¡Vive la experiencia Xtasis Ice! 🍸</h2>
+      <p class="lead mb-4">Demuestra tus reflejos y gana premios sorpresas. ¡Atrapa los vasos, esquiva lo malo y conquista el bar!</p>
+
+      <div class="premios mb-4">
+        <div class="card bg-dark text-light border-neon p-3 mb-2">
+          <b>🎯 50 pts:</b> ¡10% de descuento!
+        </div>
+        <div class="card bg-dark text-light border-neon p-3 mb-2">
+          <b>🎯 100 pts:</b> ¡2x1 en Xtasis Ice!
+        </div>
+        <div class="card bg-dark text-light border-neon p-3 mb-3">
+          <b>🎯 150 pts:</b> ¡Granizado GRATIS!
+        </div>
+      </div>
+
+      <button id="btn-jugar" class="btn btn-lg btn-neon px-5 py-3">JUGAR 🍹</button>
+    </div>
+
+    <audio id="musica" loop>
+      <source src="assets/musica.mp3" type="audio/mpeg" />
+    </audio>
+  </div>
+
+  <!-- Pantalla 2: Juego -->
+  <div id="pantalla-juego" class="pantalla oculto">
+    <canvas id="gameCanvas"></canvas>
+    <div id="hud">
+      <span>Puntaje: <b id="puntaje">0</b></span>
+      <span>Tiempo: <b id="tiempo">30</b>s</span>
+    </div>
+  </div>
+
+  <!-- Pantalla 3: Resultado -->
+  <div id="pantalla-final" class="pantalla oculto text-center text-light">
+    <h1 id="mensaje-final" class="fw-bold neon-text mb-4"></h1>
+    <div class="botones-final">
+      <button id="btn-reiniciar" class="btn btn-lg btn-neon mb-3">Volver a jugar 🔁</button>
+      <button id="btn-compartir" class="btn btn-lg btn-outline-light">Compartir 📲</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
