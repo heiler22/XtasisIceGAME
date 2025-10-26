@@ -18,13 +18,16 @@ window.addEventListener("resize", ajustarCanvas);
 document.body.style.overflowY = "auto";
 
 let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 4;
+let malosTotales = 0; // contador de objetos malos generados
 
+// --- IMÁGENES ---
 const imgGnomo = new Image(); imgGnomo.src = "assets/gnomo.png";
 const imgVaso = new Image(); imgVaso.src = "assets/vaso.png";
 const imgMalo = new Image(); imgMalo.src = "assets/malo1.png";
 const imgMalo2 = new Image(); imgMalo2.src = "assets/malo2.png";
 const imgMalo3 = new Image(); imgMalo3.src = "assets/malo3.png";
 
+// --- BOTONES ---
 btnJugar.onclick = () => {
   inicio.classList.add("oculto");
   juego.classList.remove("oculto");
@@ -34,12 +37,14 @@ btnJugar.onclick = () => {
 
 btnReiniciar.onclick = () => location.reload();
 
+// --- INICIO DEL JUEGO ---
 function iniciarJuego() {
   gnomo = { x: canvas.width / 2 - 50, y: canvas.height - 180, w: 100, h: 150, velocidad: 25 };
   objetos = [];
   puntaje = 0;
   tiempo = 20;
-  velocidad = 4; // 🔹 velocidad inicial más baja
+  velocidad = 4;
+  malosTotales = 0;
   juegoActivo = true;
 
   generarObjetos();
@@ -55,37 +60,56 @@ function iniciarJuego() {
   }, 1000);
 }
 
+// --- GENERADOR DE OBJETOS ---
 function generarObjetos() {
-  setInterval(() => {
-    if (!juegoActivo) return;
+  const generador = setInterval(() => {
+    if (!juegoActivo) {
+      clearInterval(generador);
+      return;
+    }
 
-    // 🔹 Solo 2 a 3 objetos simultáneos
-    const cantidad = 2 + Math.floor(Math.random() * 2);
+    // 🔹 Aparecen 1 o 2 objetos por oleada
+    const cantidad = 1 + Math.floor(Math.random() * 2);
 
     for (let i = 0; i < cantidad; i++) {
-      // 🔹 60% malos / 40% buenos
-      const bueno = Math.random() > 0.6;
-      const malos = [imgMalo, imgMalo2, imgMalo3];
+      let tipo, imgUsada;
+
+      // 🔹 Control estricto: máximo 10 objetos malos en toda la partida
+      if (malosTotales < 10 && Math.random() < 0.6) {
+        tipo = "malo";
+        malosTotales++;
+        const malos = [imgMalo, imgMalo2, imgMalo3];
+        imgUsada = malos[Math.floor(Math.random() * malos.length)];
+      } else {
+        tipo = "bueno";
+        imgUsada = imgVaso;
+      }
+
       objetos.push({
         x: Math.random() * (canvas.width - 60),
         y: -80,
         w: 60,
         h: 60,
-        tipo: bueno ? "bueno" : "malo",
-        img: bueno ? imgVaso : malos[Math.floor(Math.random() * malos.length)],
-        velocidadY: velocidad + Math.random() * 2,
-        velocidadX: Math.random() > 0.5 ? (Math.random() * 2 - 1) : 0
+        tipo,
+        img: imgUsada,
+        velocidadY: velocidad + Math.random() * 1.5,
+        velocidadX: Math.random() > 0.5 ? (Math.random() * 1.5 - 0.75) : 0
       });
     }
 
-    // 🔹 Dificultad progresiva, pero más controlada
+    // 🔹 Menos frecuencia de aparición de objetos
+    if (objetos.length > 25 || malosTotales >= 10) {
+      clearInterval(generador); // detener generador si ya hay muchos
+    }
+
+    // 🔹 Dificultad progresiva suave
     if (puntaje > 50) velocidad = 5;
     if (puntaje > 100) velocidad = 6;
     if (puntaje > 150) velocidad = 7;
-    if (puntaje > 200) velocidad = 8;
-  }, 600); // 🔹 objetos caen con más tiempo entre sí
+  }, 800); // más tiempo entre oleadas
 }
 
+// --- ACTUALIZACIÓN DEL JUEGO ---
 function actualizar() {
   if (!juegoActivo) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -103,7 +127,7 @@ function actualizar() {
         puntaje += 10;
         velocidad += 0.1;
       } else {
-        puntaje -= 10;
+        puntaje -= 60; // ⚠️ cada malo resta 60 puntos
         velocidad += 0.2;
       }
       objetos.splice(i, 1);
@@ -116,10 +140,12 @@ function actualizar() {
   requestAnimationFrame(actualizar);
 }
 
+// --- DETECCIÓN DE COLISIÓN ---
 function colision(a, b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
+// --- FINAL DEL JUEGO ---
 function finalizarJuego() {
   juegoActivo = false;
   juego.classList.add("oculto");
@@ -133,7 +159,7 @@ function finalizarJuego() {
   document.getElementById("mensaje-final").innerText = mensaje;
 }
 
-/* --- Controles --- */
+/* --- CONTROLES --- */
 window.addEventListener("mousemove", e => {
   gnomo.x += (e.clientX - (gnomo.x + gnomo.w / 2)) * 0.15;
 });
