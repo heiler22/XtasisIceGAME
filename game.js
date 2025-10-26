@@ -14,11 +14,11 @@ function ajustarCanvas() {
 ajustarCanvas();
 window.addEventListener("resize", ajustarCanvas);
 
-// ✅ Scroll en móviles activado
+// ✅ Permitir scroll en móviles
 document.body.style.overflowY = "auto";
 
 let gnomo, objetos = [], puntaje = 0, tiempo = 20, juegoActivo = false, velocidad = 4;
-let malosTotales = 0; // contador de objetos malos generados
+let malosTotales = 0;
 
 // --- IMÁGENES ---
 const imgGnomo = new Image(); imgGnomo.src = "assets/gnomo.png";
@@ -74,8 +74,9 @@ function generarObjetos() {
     for (let i = 0; i < cantidad; i++) {
       let tipo, imgUsada;
 
-      // 🔹 Control estricto: máximo 10 objetos malos en toda la partida
-      if (malosTotales < 10 && Math.random() < 0.6) {
+      // 🔹 55% buenos - 45% malos (hasta 30 malos en total)
+      const probMalo = malosTotales < 30 ? 0.45 : 0;
+      if (Math.random() < probMalo) {
         tipo = "malo";
         malosTotales++;
         const malos = [imgMalo, imgMalo2, imgMalo3];
@@ -97,16 +98,14 @@ function generarObjetos() {
       });
     }
 
-    // 🔹 Menos frecuencia de aparición de objetos
-    if (objetos.length > 25 || malosTotales >= 10) {
-      clearInterval(generador); // detener generador si ya hay muchos
-    }
+    // 🔹 Control de saturación en pantalla
+    if (objetos.length > 30) objetos.splice(0, objetos.length - 30);
 
-    // 🔹 Dificultad progresiva suave
+    // 🔹 Dificultad progresiva
     if (puntaje > 50) velocidad = 5;
     if (puntaje > 100) velocidad = 6;
     if (puntaje > 150) velocidad = 7;
-  }, 800); // más tiempo entre oleadas
+  }, 700);
 }
 
 // --- ACTUALIZACIÓN DEL JUEGO ---
@@ -127,8 +126,8 @@ function actualizar() {
         puntaje += 10;
         velocidad += 0.1;
       } else {
-        puntaje -= 60; // ⚠️ cada malo resta 60 puntos
-        velocidad += 0.2;
+        puntaje -= 10; // 💀 ahora solo resta 10 puntos
+        velocidad += 0.15;
       }
       objetos.splice(i, 1);
     }
@@ -153,8 +152,8 @@ function finalizarJuego() {
 
   let mensaje = "¡Sigue practicando!";
   if (puntaje >= 150) mensaje = "🔥 ¡Eres una leyenda Xtasis! 🔥";
-  else if (puntaje >= 100) mensaje = "¡Bebida premium para ti 🍸!";
-  else if (puntaje >= 50) mensaje = "¡Buen intento, prueba de nuevo! 🍹";
+  else if (puntaje >= 100) mensaje = "🍸 ¡Premio sorpresa desbloqueado!";
+  else if (puntaje >= 50) mensaje = "¡Buen intento! 💪 Sigue subiendo tu puntaje.";
 
   document.getElementById("mensaje-final").innerText = mensaje;
 }
